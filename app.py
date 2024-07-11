@@ -1,3 +1,4 @@
+
 import os
 from langchain.document_loaders import UnstructuredPDFLoader, WebBaseLoader
 from langchain_community.embeddings import CohereEmbeddings
@@ -16,10 +17,10 @@ import tempfile
 #--------------------------------------------LANGCHAIN-MODEL-----------------------------------#
 #----------------------------------------------------------------------------------------------#
 
-os.environ["COHERE_API_KEY"] = "PASTE_YOUR_COHERE_API_KEY_HERE"
+os.environ["COHERE_API_KEY"] = "Q11gNLtRpb3rmCMKzmsCasVcEMJoz1ZEKizgN7jC"
 
 # Embedding
-embedding_function = CohereEmbeddings()
+embedding_function = CohereEmbeddings(user_agent="Q11gNLtRpb3rmCMKzmsCasVcEMJoz1ZEKizgN7jC")
 
 # Temporary Database
 vector_store = Chroma(embedding_function=embedding_function)
@@ -28,6 +29,7 @@ document_store = InMemoryStore()
 # Text Splitters
 parent_splitter = RecursiveCharacterTextSplitter(chunk_size=1024, chunk_overlap=128)
 child_splitter = RecursiveCharacterTextSplitter(chunk_size=256, chunk_overlap=32)
+prompt_splitter = RecursiveCharacterTextSplitter(chunk_size=4000, chunk_overlap=100)
 
 # Relevant Content Retriever
 retriever = ParentDocumentRetriever(
@@ -130,9 +132,21 @@ def summarize_documents():
         return "No documents to summarize."
 
     full_text = " ".join([doc.page_content for doc in st.session_state.documents])
-    summary_query = "Summarize the following text: " + full_text
-    summary_result = llm.generate(prompts=[summary_query], max_tokens=10000)  # Adjust max_tokens as needed
-    return summary_result.generations[0][0].text
+    chunks = prompt_splitter.split_text(full_text)
+    summaries = []
+
+    for chunk_text in chunks:
+        summary_query = "Summarize the following text : " + chunk_text
+
+        try:
+            summary_result = llm.generate(prompts=[summary_query], max_tokens=1000)  # Adjust max_tokens as needed
+            summaries.append(summary_result.generations[0][0].text)
+        except Exception as e:
+            summaries.append("An error occurred while generating the summary.")
+
+    # Combine all chunk summaries
+    detailed_summary = " ".join(summaries)
+    return detailed_summary
 
 # UI layout
 st.set_page_config(layout="wide")  # Use wide layout
@@ -155,8 +169,7 @@ if st.sidebar.button("Process"):
 
 if st.sidebar.button("Summarize"):
     summary = summarize_documents()
-    st.write("### Document Summary")
-    st.write(summary)
+    st.session_state.chat_history.append({"user": "Document Summary", "bot": summary})
 
 st.write("")  # Add some space for better separation
 
