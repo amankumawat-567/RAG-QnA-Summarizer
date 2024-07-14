@@ -16,9 +16,9 @@ This repository contains a Streamlit-based chatbot application that uses LangCha
 
 To install and run this project locally, follow these steps:
 
-1. Clone the repository:
+1. Folk and clone the repository:
    ```sh
-   git clone https://github.com/yourusername/my-chatbot.git
+   git clone https://github.com/yourusername/RAG-QnA-Summarizer.git
    cd my-chatbot
    ```
 
