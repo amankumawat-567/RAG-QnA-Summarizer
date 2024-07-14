@@ -1,0 +1,7 @@
+langchain-community 
+pypdf 
+chromadb 
+unstructured['pdf'] 
+cohere
+langchain_cohere
+streamlit

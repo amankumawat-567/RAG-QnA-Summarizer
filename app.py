@@ -17,10 +17,8 @@ import tempfile
 #--------------------------------------------LANGCHAIN-MODEL-----------------------------------#
 #----------------------------------------------------------------------------------------------#
 
-os.environ["COHERE_API_KEY"] = "Q11gNLtRpb3rmCMKzmsCasVcEMJoz1ZEKizgN7jC"
-
 # Embedding
-embedding_function = CohereEmbeddings(user_agent="Q11gNLtRpb3rmCMKzmsCasVcEMJoz1ZEKizgN7jC")
+embedding_function = CohereEmbeddings(user_agent="PAST_YOUR_COHERE_API_KEY_HERE")
 
 # Temporary Database
 vector_store = Chroma(embedding_function=embedding_function)
